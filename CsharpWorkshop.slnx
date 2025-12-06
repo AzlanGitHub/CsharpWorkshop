@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/Net10/" />
+  <Folder Name="/Net10/Console/" />
+  <Folder Name="/Net10/WinForms/">
+    <Project Path="HalloWelt/HalloWelt.csproj" />
+  </Folder>
+  <Folder Name="/Net10/Wpf/" />
+</Solution>
