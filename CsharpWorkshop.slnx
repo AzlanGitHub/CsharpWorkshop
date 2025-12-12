@@ -3,6 +3,9 @@
   <Folder Name="/Net10/Console/" />
   <Folder Name="/Net10/WinForms/">
     <Project Path="HalloWelt/HalloWelt.csproj" />
+    <Project Path="SchoolDesk/SchoolDesk.csproj" Id="35d361c5-0a57-4288-8db5-896035da120e" />
   </Folder>
-  <Folder Name="/Net10/Wpf/" />
+  <Folder Name="/Net10/Wpf/">
+    <Project Path="Schulmanager/Schulmanager.csproj" Id="44f328b9-b15b-4e12-8383-3b9c1fe6f7d7" />
+  </Folder>
 </Solution>
