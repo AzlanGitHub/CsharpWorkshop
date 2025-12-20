@@ -40,7 +40,7 @@
                 <Label Content="Nachname:"/>
                 <TextBox Text="{Binding SelectedStudent.Nachname, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10"/>
 
-                <Label Content="Geburtsdatum (yyyy-MM-dd):"/>
+                <Label Content="Geburtsdatum MM/dd/YYYY):"/>
                 <TextBox Text="{Binding SelectedStudent.Geburtsdatum, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10"/>
 
                 <Label Content="Straße:"/>
