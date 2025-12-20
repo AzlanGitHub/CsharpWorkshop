@@ -12,13 +12,11 @@ namespace Schulmanager.ViewModels
 {
   public partial class StudentViewModel: ObservableObject
   {
-  
       private readonly SchoolDbContext _context;
       [ObservableProperty]
       private ObservableCollection<Student> _students;
       [ObservableProperty]
       private ObservableCollection<Klasse> _klassen;
-
       [ObservableProperty]
       private Student _selectedStudent;
 
@@ -28,59 +26,71 @@ namespace Schulmanager.ViewModels
         LoadData();
       }
 
-      private void LoadData()
-      {
-        // .Include ist wichtig, um die verknüpfte Klasse zu laden
-        var studentList = _context.Students.Include(s => s.Klasse).ToList();
-        var klassenList = _context.Klasses.ToList();
-        Students = new ObservableCollection<Student>(studentList);
-        Klassen = new ObservableCollection<Klasse>(klassenList);
-      }
+    /// <summary>
+    /// die Methode lädt die Daten aus der Datenbank und füllt die ObservableCollections
+    /// </summary>
+    private void LoadData()
+    {
+          var studentList = _context.Students.Include(s => s.Klasse).ToList();
+          var klassenList = _context.Klasses.ToList();
+          Students = new ObservableCollection<Student>(studentList);
+          Klassen = new ObservableCollection<Klasse>(klassenList);
+     }
 
-      [RelayCommand]
+    /// <summary>
+    /// Die Methode erzeugt einen neuen Studenten mit Standardwerten.
+    /// </summary>
+    [RelayCommand]
       public void CreateNew()
       {
           SelectedStudent = new Student
           {
-            Vorname = "Neu",
-            Nachname = "Student",
-            Geburtsdatum = DateOnly.FromDateTime(DateTime.Now),
-            Strasse = "",
-            Stadt = ""
+              Vorname = "Neu",
+              Nachname = "Student",
+              Geburtsdatum = DateOnly.FromDateTime(DateTime.Now),
+              Strasse = "Dummystraße",
+              Stadt = "Dummystadt"
           };
       }
 
-      [RelayCommand]
+    /// <summary>
+    /// Die Funktion speichert den ausgewählten Studenten in der Datenbank.
+    /// </summary>
+    [RelayCommand]
       public void Save()
       {
         if (SelectedStudent == null) return;
         try
         {
-          // Prüfen, ob der Student neu ist (ID == 0 bei Autoincrement)
-          if (SelectedStudent.StudentId == 0)
-          {
-            _context.Students.Add(SelectedStudent);
-            Students.Add(SelectedStudent); 
-          }
-          _context.SaveChanges();
-          OnPropertyChanged(nameof(Students));
-          MessageBox.Show("Erfolgreich gespeichert!");
+            if (SelectedStudent.StudentId == 0)
+            {
+              _context.Students.Add(SelectedStudent);
+              Students.Add(SelectedStudent); 
+            }
+            _context.SaveChanges();
+            OnPropertyChanged(nameof(Students));
+            MessageBox.Show("Erfolgreich gespeichert!");
         }
-        catch (Exception ex){
-          MessageBox.Show($"Fehler beim Speichern: {ex.Message}");
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Fehler beim Speichern: {ex.Message}");
         }
       }
-      [RelayCommand]
+
+    /// <summary>
+    /// die Methode löscht den ausgewählten Studenten aus der Datenbank nach der Bestätigung der MessageBox-Anzeige.
+    /// </summary>
+    [RelayCommand]
       public void Delete()
       {
         if (SelectedStudent == null) return;
 
         if (MessageBox.Show("Wirklich löschen?", "Bestätigung", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
         {
-          _context.Students.Remove(SelectedStudent);
-          _context.SaveChanges();
-          Students.Remove(SelectedStudent);
-          SelectedStudent = null;
+            _context.Students.Remove(SelectedStudent);
+            _context.SaveChanges();
+            Students.Remove(SelectedStudent);
+            SelectedStudent = null;
         }
       }
     }
