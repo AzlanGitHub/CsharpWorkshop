@@ -1,11 +1,9 @@
-﻿
-using System.Collections;
+﻿using System.Collections;
 using System.ComponentModel;
-
+using System.ComponentModel.DataAnnotations;
 namespace Schulmanager.Models;
 public partial class Student: INotifyPropertyChanged, INotifyDataErrorInfo
 {
-    public event PropertyChangedEventHandler PropertyChanged;
     public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
 
   private int _studentId;
@@ -17,6 +15,8 @@ public partial class Student: INotifyPropertyChanged, INotifyDataErrorInfo
     } 
   }
   private string _vorname;
+  [Required]
+  [MaxLength(100)]
   public string Vorname
   {
     get => _vorname;
@@ -27,6 +27,8 @@ public partial class Student: INotifyPropertyChanged, INotifyDataErrorInfo
     }
   }
   private string _nachname;
+  [Required]
+  [MaxLength(100)]
   public string Nachname
   {
     get => _nachname;
@@ -38,6 +40,8 @@ public partial class Student: INotifyPropertyChanged, INotifyDataErrorInfo
   }
   // Wir speichern Geburtsdatum als DateOnly wie in deinem Projekt
   private DateOnly _geburtsdatum;
+  [Required]
+  [MaxLength(10)]
   public DateOnly Geburtsdatum
   {
     get => _geburtsdatum;
@@ -48,6 +52,8 @@ public partial class Student: INotifyPropertyChanged, INotifyDataErrorInfo
     }
   }
   private string _strasse;
+  [Required]
+  [MaxLength(150)]
   public string Strasse
   {
     get => _strasse;
@@ -58,6 +64,8 @@ public partial class Student: INotifyPropertyChanged, INotifyDataErrorInfo
     }
   }
   private string _stadt;
+  [Required]
+  [MaxLength(100)]
   public string Stadt
   {
     get => _stadt;
@@ -67,6 +75,14 @@ public partial class Student: INotifyPropertyChanged, INotifyDataErrorInfo
       ValidateProperty(nameof(Stadt)); 
     }
   }
+
+  // Beziehung zwishen den Entitäten
+  public int? KlasseId { get; set; }
+  public virtual ICollection<Anwesenheit> Anwesenheits { get; set; } = new List<Anwesenheit>();
+  public virtual Klasse? Klasse { get; set; }
+  public virtual ICollection<Noten> Notens { get; set; } = new List<Noten>();
+  public virtual ICollection<StudentFach> StudentFaches { get; set; } = new List<StudentFach>();
+
   // Fehlerverwaltung
   private readonly Dictionary<string, List<string>> _errors = new();
   public bool HasErrors => _errors.Any();
@@ -77,6 +93,7 @@ public partial class Student: INotifyPropertyChanged, INotifyDataErrorInfo
     return _errors.ContainsKey(propertyName) ? _errors[propertyName] : Enumerable.Empty<string>();
   }
 
+  public event PropertyChangedEventHandler PropertyChanged;
   private void OnPropertyChanged(string propertyName) =>
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
   private void AddError(string propertyName, string error)
@@ -139,12 +156,6 @@ public partial class Student: INotifyPropertyChanged, INotifyDataErrorInfo
         break;
     }
   }
-    // Foreign Key 
-    // Beziehung zu Klasse und anderen Entitäten
-  public int? KlasseId { get; set; }
-    public virtual ICollection<Anwesenheit> Anwesenheits { get; set; } = new List<Anwesenheit>();
-    public virtual Klasse? Klasse { get; set; }
-    public virtual ICollection<Noten> Notens { get; set; } = new List<Noten>();
-    public virtual ICollection<StudentFach> StudentFaches { get; set; } = new List<StudentFach>();
+
 
 }
