@@ -26,6 +26,51 @@ namespace Schulmanager.ViewModels
         LoadData();
       }
 
+    partial void OnSelectedStudentChanged(Student oldValue, Student newValue)
+    {
+      if (oldValue != null)
+        oldValue.ErrorsChanged -= SelectedStudent_ErrorsChanged;
+      if (newValue != null)
+        newValue.ErrorsChanged += SelectedStudent_ErrorsChanged;
+
+      // Notify CanExecute initial
+      SaveCommand.NotifyCanExecuteChanged();
+    }
+
+    private void SelectedStudent_ErrorsChanged(object sender, System.ComponentModel.DataErrorsChangedEventArgs e)
+    {
+      // Wenn sich Validierungsfehler ändern, aktualisiere CanExecute
+      SaveCommand.NotifyCanExecuteChanged();
+    }
+
+    private bool CanSave()
+    {
+      return SelectedStudent != null && !SelectedStudent.HasErrors;
+    }
+    /// <summary>
+    /// Die Funktion speichert den ausgewählten Studenten in der Datenbank.
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanSave))]
+    public void Save()
+    {
+      if (SelectedStudent == null) return;
+      try
+      {
+        if (SelectedStudent.StudentId == 0)
+        {
+          _context.Students.Add(SelectedStudent);
+          Students.Add(SelectedStudent);
+        }
+        _context.SaveChanges();
+        OnPropertyChanged(nameof(Students));
+        MessageBox.Show("Erfolgreich gespeichert!");
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show($"Fehler beim Speichern: {ex.Message}");
+      }
+    }
+
     /// <summary>
     /// die Methode lädt die Daten aus der Datenbank und füllt die ObservableCollections
     /// </summary>
@@ -51,30 +96,6 @@ namespace Schulmanager.ViewModels
               Strasse = "Dummystraße",
               Stadt = "Dummystadt"
           };
-      }
-
-    /// <summary>
-    /// Die Funktion speichert den ausgewählten Studenten in der Datenbank.
-    /// </summary>
-    [RelayCommand]
-      public void Save()
-      {
-        if (SelectedStudent == null) return;
-        try
-        {
-            if (SelectedStudent.StudentId == 0)
-            {
-              _context.Students.Add(SelectedStudent);
-              Students.Add(SelectedStudent); 
-            }
-            _context.SaveChanges();
-            OnPropertyChanged(nameof(Students));
-            MessageBox.Show("Erfolgreich gespeichert!");
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show($"Fehler beim Speichern: {ex.Message}");
-        }
       }
 
     /// <summary>
